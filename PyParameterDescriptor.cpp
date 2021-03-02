@@ -9,7 +9,7 @@
 
 */
 
-#include <Python.h>
+#include <py3c.h>
 #include "PyParameterDescriptor.h"
 #include "vamp-sdk/Plugin.h"
 #include <string>
@@ -101,15 +101,14 @@ ParameterDescriptor_repr(PyObject *self)
 {
 	ParameterDescriptorObject* v = (ParameterDescriptorObject*)self;
 	if (v->dict) return PyDict_Type.tp_repr((PyObject *)v->dict);
-	else return PyString_FromString("ParameterDescriptor()");
+	else return PyStr_FromString("ParameterDescriptor()");
 }
 
 #define ParameterDescriptor_alloc PyType_GenericAlloc
 #define ParameterDescriptor_free PyObject_Del
 
 PyTypeObject ParameterDescriptor_Type = {
-	PyObject_HEAD_INIT(NULL)
-	0,						/*ob_size*/
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"vampy.ParameterDescriptor",/*tp_name*/
 	sizeof(ParameterDescriptorObject),	/*tp_basicsize*/
 	0,						/*tp_itemsize*/

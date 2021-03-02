@@ -9,7 +9,7 @@
 
 */
 
-#include <Python.h>
+#include <py3c.h>
 #include "PyExtensionModule.h"
 #include "PyFeature.h"
 #include "vamp-sdk/Plugin.h"
@@ -62,10 +62,10 @@ Feature_new(PyTypeObject *type, PyObject *args, PyObject *kw)
 		const char* name = kwlist[i];
 		const char* attr = kwlist[++i];
 		i++;
-		PyObject *key = PyString_FromString(name);
+		PyObject *key = PyStr_FromString(name);
 		if (!key) break;
 		if (PyDict_Contains(kw,key)) {
-			if (PyDict_SetItem(self->dict,PyString_FromString(attr),Py_True) != 0)
+			if (PyDict_SetItem(self->dict,PyStr_FromString(attr),Py_True) != 0)
 				PyErr_SetString(PyExc_TypeError, 
 					"Error: in keyword arguments of vampy.Feature().");
 		}
@@ -80,7 +80,7 @@ static void
 FeatureObject_dealloc(FeatureObject *self)
 {
 	Py_XDECREF(self->dict);
-	self->ob_type->tp_free((PyObject*)self);
+	Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 /*					 Feature Object's Methods 					*/ 
@@ -166,7 +166,7 @@ Feature_repr(PyObject *self)
 {
 	FeatureObject* v = (FeatureObject*)self;
 	if (v->dict) return PyDict_Type.tp_repr((PyObject *)v->dict);
-	else return PyString_FromString("Feature()");
+	else return PyStr_FromString("Feature()");
 }
 
 #define Feature_alloc PyType_GenericAlloc
@@ -176,8 +176,7 @@ Feature_repr(PyObject *self)
 /*						FEATURE TYPE OBJECT						*/
 
 PyTypeObject Feature_Type = {
-	PyObject_HEAD_INIT(NULL)
-	0,						/*ob_size*/
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"vampy.Feature",		/*tp_name*/
 	sizeof(FeatureObject),	/*tp_basicsize*/
 	0,						/*tp_itemsize*/

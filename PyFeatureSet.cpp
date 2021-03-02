@@ -9,7 +9,7 @@
 
 */
 
-#include <Python.h>
+#include <py3c.h>
 #include "PyFeatureSet.h"
 #include "vamp-sdk/Plugin.h"
 
@@ -50,7 +50,7 @@ initFeatureSetType(void)
 {
 	/*This type is derived from PyDict. We just override some slots here.*/
 	/*The typical use case is index based assignment as opposed to object memeber access.*/
-	FeatureSet_Type.ob_type = &PyType_Type;
+	Py_TYPE(&FeatureSet_Type) = &PyType_Type;
 	FeatureSet_Type.tp_base = &PyDict_Type;
 	FeatureSet_Type.tp_bases = PyTuple_Pack(1, FeatureSet_Type.tp_base);
 	FeatureSet_Type.tp_name = "vampy.FeatureSet";

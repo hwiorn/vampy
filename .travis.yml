@@ -18,6 +18,7 @@ addons:
       - vamp-plugin-sdk
       - vamp-examples
       - python-numpy
+      - python3-numpy
       
 before_install:
   - if [[ "$TRAVIS_OS_NAME" = "osx" ]] ; then brew update ; brew install libsndfile ; fi

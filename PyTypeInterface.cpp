@@ -10,7 +10,7 @@
 
 */
 
-#include <Python.h>
+#include <py3c.h>
 
 #ifdef HAVE_NUMPY
 #define PY_ARRAY_UNIQUE_SYMBOL VAMPY_ARRAY_API
@@ -113,9 +113,9 @@ PyTypeInterface::PyValue_To_Float(PyObject* pyValue) const
 	}
 */	
     // convert string
-	if (PyString_Check(pyValue))
+	if (PyStr_Check(pyValue))
 	{
-		PyObject* pyFloat = PyFloat_FromString(pyValue,NULL);
+		PyObject* pyFloat = PyFloat_FromString(pyValue);
 		if (!pyFloat) 
 		{
 			if (PyErr_Occurred()) { PyErr_Print(); PyErr_Clear(); }
@@ -203,7 +203,7 @@ PyTypeInterface::PyValue_To_Size_t(PyObject* pyValue) const
 	}
 	
 	// convert string
-	if (PyString_Check(pyValue))
+	if (PyStr_Check(pyValue))
 	{
 		PyObject* pyLong = PyNumber_Long(pyValue);
 		if (!pyLong) 
@@ -298,7 +298,7 @@ PyTypeInterface::PyValue_To_Long(PyObject* pyValue) const
 	}
 	
 	// convert string
-	if (PyString_Check(pyValue))
+	if (PyStr_Check(pyValue))
 	{
 		PyObject* pyLong = PyNumber_Long(pyValue);
 		if (!pyLong) 
@@ -400,9 +400,9 @@ std::string
 PyTypeInterface::PyValue_To_String(PyObject* pyValue) const
 {
 	// convert string
-	if (PyString_Check(pyValue)) 
+	if (PyStr_Check(pyValue)) 
 	{	
-		char *cstr = PyString_AS_STRING(pyValue);
+		char *cstr = PyBytes_AS_STRING(pyValue);
 		if (!cstr) 
 		{
 			if (PyErr_Occurred()) {PyErr_Print(); PyErr_Clear();}
@@ -482,7 +482,7 @@ PyTypeInterface::PyValue_From_CValue(const char* cValue) const
 		return NULL;
 	}
 #endif
-	PyObject *pyValue = PyString_FromString(cValue);
+	PyObject *pyValue = PyStr_FromString(cValue);
 	if (!pyValue)
 	{
 		if (PyErr_Occurred()) {PyErr_Print(); PyErr_Clear();}
@@ -563,7 +563,7 @@ PyTypeInterface::PyValue_To_StringVector (PyObject *pyList) const
 		for (Py_ssize_t i = 0; i < PyList_GET_SIZE(pyList); ++i) {
 			//Get next list item (Borrowed Reference)
 			pyString = PyList_GET_ITEM(pyList,i);
-			ListElement = (string) PyString_AsString(PyObject_Str(pyString));
+			ListElement = (string) PyStr_AsString(PyObject_Str(pyString));
 			Output.push_back(ListElement);
 		}
 		return Output;
@@ -872,7 +872,7 @@ PyTypeInterface::PyValue_To_SampleType(PyObject* pyValue) const
 	}
 	
 	/// convert string (backward compatible)
-	if (PyString_CheckExact(pyValue)) {
+	if (PyStr_CheckExact(pyValue)) {
 		Vamp::Plugin::OutputDescriptor::SampleType st;
 		st = (Vamp::Plugin::OutputDescriptor::SampleType) sampleKeys[PyValue_To_String(pyValue)]; 
 		if (m_error) {
@@ -906,7 +906,7 @@ PyTypeInterface::PyValue_To_InputDomain(PyObject* pyValue) const
 	}
 	
 	/// convert string (backward compatible)
-	if (PyString_CheckExact(pyValue)) {
+	if (PyStr_CheckExact(pyValue)) {
 		Vamp::Plugin::InputDomain id;
 		id = (PyValue_To_String(pyValue) == "FrequencyDomain")?Vamp::Plugin::FrequencyDomain:Vamp::Plugin::TimeDomain;
 		if (m_error) 
@@ -1132,7 +1132,7 @@ PyTypeInterface::PyValue_Get_TypeName(PyObject* pyValue) const
 		Py_CLEAR(pyType);
 		return std::string ("< unknown type >");
 	}
-	char *cstr = PyString_AS_STRING(pyString);
+	char *cstr = PyBytes_AS_STRING(pyString);
 	if (!cstr)
 	{
 		cerr << "Warning: Object type name could not be found." << endl;

@@ -10,7 +10,7 @@
 
 */
 
-#include <Python.h>
+#include <py3c.h>
 #include "vamp/vamp.h"
 #include "PyExtensionModule.h"
 #include "PyExtensionManager.h"
@@ -159,7 +159,7 @@ PyExtensionManager::cleanLocalNamespace(const char* plugModuleName) const
 	while (PyExtensionManager::m_exposedNames[i]) {
 		const char* name = PyExtensionManager::m_exposedNames[i];
 		i++;
-		PyObject *key = PyString_FromString(name);
+		PyObject *key = PyStr_FromString(name);
 		if (!key) break;
 		if (PyDict_Contains(pyPlugDict,key)) {
 			if (PyDict_SetItem(pyPlugDict,key,Py_None) != 0)
@@ -190,7 +190,7 @@ PyExtensionManager::updateLocalNamespace(const char* plugModuleName) const
 	while (PyExtensionManager::m_exposedNames[i]) {
 		const char* name = PyExtensionManager::m_exposedNames[i];
 		i++;
-		PyObject *key = PyString_FromString(name);
+		PyObject *key = PyStr_FromString(name);
 		if (!key) break;
 		if (PyDict_Contains(pyPlugDict,key)) {
 			PyObject* item = PyDict_GetItem(m_pyVampyNamespace,key);
@@ -225,7 +225,7 @@ PyExtensionManager::cleanModule(void) const
 		PyDict_Clear(dict);
 		if (PyErr_Occurred()) 
 			{ PyErr_Print(); PyErr_Clear(); return false; }
-		PyObject *name = PyString_FromString("vampy");
+		PyObject *name = PyStr_FromString("vampy");
 		if (name) PyDict_SetItemString(dict,"__name__",name);
 		Py_XDECREF(name);
 #ifdef _DEBUG		
@@ -244,8 +244,8 @@ PyExtensionManager::printDict(PyObject* inDict) const
 	cerr << endl << endl << "Module dictionary contents: " << endl;
 	while (PyDict_Next(inDict, &pyPos, &pyKey, &pyDictValue))
 	{ 
-		char *key = PyString_AS_STRING(pyKey);
-		char *val = PyString_AS_STRING(PyObject_Str(pyDictValue));
+		char *key = PyBytes_AS_STRING(pyKey);
+		char *val = PyBytes_AS_STRING(PyObject_Str(pyDictValue));
 		cerr << "key: [ '" << key << "' ] value: " << val << endl;
 	}
 }

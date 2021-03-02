@@ -48,6 +48,6 @@ enum eVampyFlags {
 #define PyMODINIT_FUNC void
 #endif
 
-PyMODINIT_FUNC initvampy();
+PyMODINIT_FUNC initvampy(void);
 
 #endif

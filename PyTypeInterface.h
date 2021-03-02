@@ -17,7 +17,7 @@ and basic C/C++ types and Vamp API types.
 
 #ifndef _PY_TYPE_INTERFACE_H_
 #define _PY_TYPE_INTERFACE_H_
-#include <Python.h>
+#include <py3c.h>
 #ifdef HAVE_NUMPY
 #define PY_ARRAY_UNIQUE_SYMBOL VAMPY_ARRAY_API
 #define NO_IMPORT_ARRAY
@@ -493,6 +493,14 @@ PyTypeInterface::InputBuffers_As_PythonLists(const float *const *inputBuffers,co
 	return pyChannelList;
 }
 
+inline PyObject * PyBuffer_FromMemory_compatible(void *ptr, Py_ssize_t size) {
+#if IS_PY3
+	return PyMemoryView_FromMemory((char*)ptr, size, PyBUF_READ);
+#else
+	return PyBuffer_FromMemory(ptr, size);
+#endif
+}
+
 /// numpy buffer interface: passing the sample buffers as shared memory buffers
 /// Optimization: using sequence protocol for creating the buffer list
 inline PyObject*
@@ -515,7 +523,7 @@ PyTypeInterface::InputBuffers_As_SharedMemoryList(const float *const *inputBuffe
 		bufferSize = (Py_ssize_t) sizeof(float) * blockSize;
 	
 	for (size_t i=0; i < channels; ++i) {
-		PyObject *pyBuffer = PyBuffer_FromMemory
+		PyObject *pyBuffer = PyBuffer_FromMemory_compatible
 		((void *) (float *) inputBuffers[i],bufferSize);
 		pyChannelListArray[i] = pyBuffer;
 	}

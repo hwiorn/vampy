@@ -9,7 +9,7 @@
 
 */
 
-#include <Python.h>
+#include <py3c.h>
 #include "PyRealTime.h"
 #include "vamp-sdk/Plugin.h"
 #include <string>
@@ -191,8 +191,12 @@ RealTime_getattr(RealTimeObject *self, char *name)
 		(Py_ssize_t) self->rt->nsec); 
 	} 
 
+#if IS_PY3
+	return PyObject_GenericGetAttr((PyObject *) self, PyStr_FromString(name));
+#else
 	return Py_FindMethod(RealTime_methods, 
 	(PyObject *)self, name);
+#endif
 }
 
 /* String representation called by e.g. str(realtime), print realtime*/
@@ -236,7 +240,9 @@ static PyNumberMethods realtime_as_number =
 	RealTime_add,			/*nb_add*/
 	RealTime_subtract,		/*nb_subtract*/
 	0,						/*nb_multiply*/
+#if !IS_PY3
 	0,				 		/*nb_divide*/
+#endif
     0,						/*nb_remainder*/
     0,      	            /*nb_divmod*/
     0,                   	/*nb_power*/
@@ -250,12 +256,16 @@ static PyNumberMethods realtime_as_number =
     0,      				/*nb_and*/
     0,      				/*nb_xor*/
     0,       				/*nb_or*/
+#if !IS_PY3
     0,                      /*nb_coerce*/
+#endif
     0,						/*nb_int*/
     0,				        /*nb_long*/
     (unaryfunc)RealTime_float,/*nb_float*/
+#if !IS_PY3
     0,               		/*nb_oct*/
     0,               		/*nb_hex*/
+#endif
 };
 
 /*						REAL-TIME TYPE OBJECT						*/
@@ -266,8 +276,7 @@ static PyNumberMethods realtime_as_number =
 /* Doc:: 10.3 Type Objects */ /* static */ 
 PyTypeObject RealTime_Type = 
 {
-	PyObject_HEAD_INIT(NULL)
-	0,						/*ob_size*/
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"vampy.RealTime",				/*tp_name*/
 	sizeof(RealTimeObject),	/*tp_basicsize*/
 	0,//sizeof(RealTime),		/*tp_itemsize*/

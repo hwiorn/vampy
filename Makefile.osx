@@ -1,9 +1,10 @@
+PY_VERSION ?= 2.7
 
-PYDIR		:= /System/Library/Frameworks/Python.framework/Versions/2.7
+PYDIR		:= /System/Library/Frameworks/Python.framework/Versions/$(PY_VERSION)
 
-CXXFLAGS	:= -DHAVE_NUMPY -D_DEBUG -mmacosx-version-min=10.10 -I../vamp-plugin-sdk -O2 -Wall -I$(PYDIR)/include/python2.7 -I$(PYDIR)/Extras/lib/python/numpy/core/include
+CXXFLAGS	:= -DHAVE_NUMPY -D_DEBUG -mmacosx-version-min=10.10 -I../vamp-plugin-sdk -O2 -Wall -I$(PYDIR)/include/python$(PY_VERSION) -I$(PYDIR)/Extras/lib/python/numpy/core/include
 
-LDFLAGS		:= -install_name vampy.dylib -g -exported_symbols_list vamp-plugin.list -mmacosx-version-min=10.10 ../vamp-plugin-sdk/libvamp-sdk.a -dynamiclib -lpython2.7 -lpthread
+LDFLAGS		:= -install_name vampy.dylib -g -exported_symbols_list vamp-plugin.list -mmacosx-version-min=10.10 ../vamp-plugin-sdk/libvamp-sdk.a -dynamiclib -lpython$(PY_VERSION) -lpthread
 
 default: vampy.dylib 
 all: vampy.dylib vampymod.so

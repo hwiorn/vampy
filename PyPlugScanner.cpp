@@ -156,7 +156,7 @@ PyPlugScanner::getScriptClass(string path, string classname)
 	PyRun_SimpleString(pyCmd.c_str());
 
 	//Assign an object to the source code
-	PyObject *pySource = PyString_FromString(classname.c_str());
+	PyObject *pySource = PyStr_FromString(classname.c_str());
 
 	//Import it as a module into the py interpreter
 	PyObject *pyModule = PyImport_Import(pySource);
@@ -266,7 +266,7 @@ PyPlugScanner::getScriptClass(string path, string classname)
 	if (acceptable) {
 		return pyClass;
 	} else {
-		PyObject *key = PyString_FromString(classname.c_str());
+		PyObject *key = PyStr_FromString(classname.c_str());
 		PyDict_SetItem(pyDict, key, Py_None);
 		Py_DECREF(key);
 		return NULL;

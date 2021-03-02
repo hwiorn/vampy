@@ -46,7 +46,8 @@
 #ifndef _VAMP_PYPLUG_SCANNER_H_
 #define _VAMP_PYPLUG_SCANNER_H_
 
-#include <Python.h>
+// #include <Python.h>
+#include <py3c.h>
 #include <iostream>
 #include <vector>
 #include <string>

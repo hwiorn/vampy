@@ -10,7 +10,7 @@
 
 */
 
-#include <Python.h>
+#include <py3c.h>
 
 #ifdef HAVE_NUMPY
 
@@ -69,6 +69,7 @@
 
 using std::cerr;
 using std::endl;
+using std::wstring;
 using std::string;
 using std::vector;
 
@@ -117,9 +118,13 @@ protected:
 };
 
 
+#if PY_VERSION_HEX >= 0x03000000
+static void* array_API_initialiser()
+#else
 static void array_API_initialiser()
+#endif
 {
-	if (arrayApiInitialised) return; 
+	if (arrayApiInitialised) return NUMPY_IMPORT_ARRAY_RETVAL;
 
 /* Numpy 1.3 build note: there seems to be a bug 
 in this version (at least on OS/X) which will cause memory 
@@ -161,7 +166,7 @@ version of Numpy is used when loading the library.
 		goto numpyFailure;
 	}
 
-	ver = PyString_AsString(pyVer);
+	ver = PyStr_AsString(pyVer);
 	ver = ver.substr(0,ver.rfind("."));
 	majorver = ver.substr(0,ver.rfind("."));
 	minorver = ver.substr(ver.rfind(".")+1);
@@ -195,7 +200,7 @@ version of Numpy is used when loading the library.
 	else {
 		numpyInstalled = true;
 		arrayApiInitialised = true;
-		return;
+		return NUMPY_IMPORT_ARRAY_RETVAL;
   	}
 
 
@@ -205,7 +210,7 @@ numpyFailure:
 	numpyInstalled = false;
 	arrayApiInitialised = true;
 	if (pyModule) Py_XDECREF(pyModule);
-	return;
+	return NUMPY_IMPORT_ARRAY_RETVAL;
 
 /*HAVE_NUMPY*/
 #else
@@ -214,7 +219,7 @@ numpyFailure:
 
 	numpyInstalled = false;
 	arrayApiInitialised = true;
-	return;
+	return NUMPY_IMPORT_ARRAY_RETVAL;
 }
 
 
@@ -247,6 +252,12 @@ static bool preloadPython()
     return true;
 #endif
 
+#if IS_PY3
+	wstring py_exec_prefix_ws = Py_GetExecPrefix();
+	string py_exec_prefix(py_exec_prefix_ws.begin(), py_exec_prefix_ws.end());
+#else
+	string py_exec_prefix = Py_GetExecPrefix();
+#endif
     string pyver = Py_GetVersion();
     int dots = 2;
     string shortver;
@@ -260,7 +271,7 @@ static bool preloadPython()
     }
     DSTREAM << "Short version: " << shortver << endl;
     // this is useful to find out where the loaded library might be loaded from
-    DSTREAM << "Python exec prefix: " << Py_GetExecPrefix() << endl;
+    DSTREAM << "Python exec prefix: " << py_exec_prefix << endl;
 
     char *pylib = getenv("VAMPY_PYLIB");
     if (pylib && *pylib) {
@@ -270,8 +281,8 @@ static bool preloadPython()
     } 
 
     vector<string> pfxs;
-    pfxs.push_back(string(Py_GetExecPrefix()) + "/");
-    pfxs.push_back(string(Py_GetExecPrefix()) + "/lib/");
+    pfxs.push_back(string(py_exec_prefix) + "/");
+    pfxs.push_back(string(py_exec_prefix) + "/lib/");
     pfxs.push_back("");
     pfxs.push_back("/usr/lib/");
     pfxs.push_back("/usr/local/lib/");
@@ -325,7 +336,7 @@ const VampPluginDescriptor
 
 			if (!preloadPython())
 				cerr << "Warning: Could not preload Python. Dynamic loading in scripts will fail." << endl;
-			if (PyImport_AppendInittab("vampy",initvampy) != 0)
+			if (PyImport_AppendInittab("vampy", initvampy) != 0)
 				cerr << "Warning: Extension module could not be added to module inittab." << endl;
 			Py_Initialize();
 			array_API_initialiser();

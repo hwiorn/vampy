@@ -9,7 +9,7 @@
 
 */
 
-#include <Python.h>
+#include <py3c.h>
 #include "PyPlugin.h"
 #include "PyTypeInterface.h"
 #include <stdlib.h>
@@ -367,7 +367,7 @@ PyPlugin::setProcessType()
 	    m_processType == 0) 
 	{ 
 		m_processType = legacyProcess;
-		m_pyProcess = PyString_FromString(legacyMethod);
+		m_pyProcess = PyStr_FromString(legacyMethod);
 		m_pyProcessCallable = PyObject_GetAttr(m_pyInstance,m_pyProcess);
 	}
 
@@ -375,7 +375,7 @@ PyPlugin::setProcessType()
 	    m_processType == 0)
 	{
 		m_processType = numpy_bufferProcess;
-		m_pyProcess = PyString_FromString(numpyMethod);
+		m_pyProcess = PyStr_FromString(numpyMethod);
 		m_pyProcessCallable = PyObject_GetAttr(m_pyInstance,m_pyProcess);
 	}
 

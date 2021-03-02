@@ -9,7 +9,7 @@
 
 */
 
-#include <Python.h>
+#include <py3c.h>
 #include "PyExtensionModule.h"
 #include "PyRealTime.h"
 #include "PyFeature.h"
@@ -176,15 +176,21 @@ setstr(PyObject *d, const char *name, const char *value)
 {
 	PyObject *v;
 	int err;
-	v = PyString_FromString(value);
+	v = PyStr_FromString(value);
 	err = PyDict_SetItemString(d, name, v);
 	Py_XDECREF(v);
 	return err;
 }
 
+static struct PyModuleDef VampyDef = {
+    PyModuleDef_HEAD_INIT,
+    "vampy",
+    PyDoc_STR("Vampy : This plugin is a wrapper around the Vamp plugin API. It allows for writing Vamp plugins in Python"),
+    -1,
+    VampyMethods
+};
 
-PyMODINIT_FUNC
-initvampy(void)
+MODULE_INIT_FUNC(vampy)
 {
 	PyObject *module, *mdict;
 
@@ -196,14 +202,14 @@ initvampy(void)
 	is unloaded. When the GC tries to visit a these objects, 
 	it will fail.*/
 	
-	RealTime_Type.ob_type = &PyType_Type;
-	Feature_Type.ob_type = &PyType_Type;
-	OutputDescriptor_Type.ob_type = &PyType_Type;
-	ParameterDescriptor_Type.ob_type = &PyType_Type;
+	Py_TYPE(&RealTime_Type) = &PyType_Type;
+	Py_TYPE(&Feature_Type) = &PyType_Type;
+	Py_TYPE(&OutputDescriptor_Type) = &PyType_Type;
+	Py_TYPE(&ParameterDescriptor_Type) = &PyType_Type;
 	initFeatureSetType(); // this is derived from the builtin dict
 
 	PyImport_AddModule("vampy");
-	module = Py_InitModule("vampy", VampyMethods);
+	module = PyModule_Create(&VampyDef);
 	if (!module) goto failure;
 	mdict = PyModule_GetDict(module);
 	if (!mdict) goto failure;
@@ -253,12 +259,17 @@ initvampy(void)
 	
 	DSTREAM << "Vampy: extension module initialised." << endl;
 
-	return;
+	return module;
 	
 failure :
 	if (PyErr_Occurred()) {PyErr_Print(); PyErr_Clear();}
 	cerr << "Vampy::PyExtensionModule::initvampy: Failed to initialise extension module." << endl;
-	return;
+	return NULL;
 }
 
+#if IS_PY3
+PyMODINIT_FUNC initvampy(void) {
+	return PyInit_vampy();
+}
+#endif
 

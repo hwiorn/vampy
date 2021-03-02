@@ -18,7 +18,7 @@
 #define DEFAULT_RETURN "Method [" << _CLASS_METHOD_ << "] is not implemented. Returning default value."
 #define FLAG_VALUE "Flag: " << flagName << ": " << ((rValue==0)?"False":"True")
 
-#include <Python.h>
+#include <py3c.h>
 #include "PyExtensionModule.h"
 #include "PyTypeInterface.h"
 #include "vamp-sdk/Plugin.h"
@@ -398,7 +398,7 @@ PyPlugin::processMethodCall(const float *const *inputBuffers,Vamp::RealTime time
 #ifdef _DEBUG
 	if (!pyChannelList) {
 		if (PyErr_Occurred()) {PyErr_Print(); PyErr_Clear();}
-		std::string method = PyString_AsString(m_pyProcess);
+		std::string method = PyStr_AsString(m_pyProcess);
 		cerr << PLUGIN_ERROR << "Failed to create channel list." << endl;
 		return rFeatureSet;
 	}
@@ -420,7 +420,7 @@ PyPlugin::processMethodCall(const float *const *inputBuffers,Vamp::RealTime time
 #ifdef _DEBUG
 	if (!pyTimeStamp) {
 		if (PyErr_Occurred()) {PyErr_Print(); PyErr_Clear();}
-		std::string method = PyString_AsString(m_pyProcess);
+		std::string method = PyStr_AsString(m_pyProcess);
 		cerr << PLUGIN_ERROR << "Failed to create RealTime time stamp." << endl;
 		Py_DECREF(pyChannelList);
 		return rFeatureSet;
@@ -440,7 +440,7 @@ PyPlugin::processMethodCall(const float *const *inputBuffers,Vamp::RealTime time
 
 	if (!pyValue) {
 		if (PyErr_Occurred()) {PyErr_Print(); PyErr_Clear();}
-		std::string method = PyString_AsString(m_pyProcess);
+		std::string method = PyStr_AsString(m_pyProcess);
 		cerr << PLUGIN_ERROR << "An error occurred while evaluating Python process." << endl;
 		Py_CLEAR(pyValue);
 		Py_CLEAR(pyArgs);
@@ -452,7 +452,7 @@ PyPlugin::processMethodCall(const float *const *inputBuffers,Vamp::RealTime time
 		Py_DECREF(pyValue);
 		Py_DECREF(pyArgs);
 	} else {
-		typeErrorHandler(PyString_AsString(m_pyProcess),true);
+		typeErrorHandler(PyStr_AsString(m_pyProcess),true);
 		Py_CLEAR(pyValue);
 		Py_CLEAR(pyArgs);
 	}

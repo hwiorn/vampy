@@ -9,7 +9,7 @@
 
 */
 
-#include <Python.h>
+#include <py3c.h>
 #include "PyOutputDescriptor.h"
 #include "vamp-sdk/Plugin.h"
 #include <string>
@@ -100,7 +100,7 @@ OutputDescriptor_repr(PyObject *self)
 {
 	OutputDescriptorObject* v = (OutputDescriptorObject*)self;
 	if (v->dict) return PyDict_Type.tp_repr((PyObject *)v->dict);
-	else return PyString_FromString("OutputDescriptor()");
+	else return PyStr_FromString("OutputDescriptor()");
 }
 
 #define OutputDescriptor_alloc PyType_GenericAlloc
@@ -110,8 +110,7 @@ OutputDescriptor_repr(PyObject *self)
 /*						REAL-TIME TYPE OBJECT						*/
 
 PyTypeObject OutputDescriptor_Type = {
-	PyObject_HEAD_INIT(NULL)
-	0,						/*ob_size*/
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"vampy.OutputDescriptor",/*tp_name*/
 	sizeof(OutputDescriptorObject),	/*tp_basicsize*/
 	0,						/*tp_itemsize*/
