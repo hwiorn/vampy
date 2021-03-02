@@ -1,6 +1,6 @@
 PY_VERSION ?= 2.7
 CXXFLAGS	+= -DHAVE_NUMPY \
-		-D_DEBUG -O2 -Wall -Werror -fno-strict-aliasing -fPIC \
+		-D_DEBUG -O0 -g -Wall -Werror -fno-strict-aliasing -fPIC \
 		-I/usr/include/python$(PY_VERSION) \
 		-I/usr/lib/python$(PY_VERSION)/dist-packages/numpy/core/include \
 		-I/usr/lib/python$(PY_VERSION)/site-packages/numpy/core/include \

@@ -402,7 +402,8 @@ PyTypeInterface::PyValue_To_String(PyObject* pyValue) const
 	// convert string
 	if (PyStr_Check(pyValue)) 
 	{	
-		char *cstr = PyBytes_AS_STRING(pyValue);
+		// char *cstr = PyBytes_AS_STRING(pyValue);
+		const char *cstr = PyStr_AsString(pyValue);
 		if (!cstr) 
 		{
 			if (PyErr_Occurred()) {PyErr_Print(); PyErr_Clear();}
@@ -1132,7 +1133,8 @@ PyTypeInterface::PyValue_Get_TypeName(PyObject* pyValue) const
 		Py_CLEAR(pyType);
 		return std::string ("< unknown type >");
 	}
-	char *cstr = PyBytes_AS_STRING(pyString);
+	// char *cstr = PyBytes_AS_STRING(pyString);
+	const char *cstr = PyStr_AsString(pyString);
 	if (!cstr)
 	{
 		cerr << "Warning: Object type name could not be found." << endl;

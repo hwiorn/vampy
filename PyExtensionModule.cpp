@@ -147,18 +147,7 @@ PyMethodDef VampyMethods[] = {
 };
 
 /* Module Documentation */
-// PyDoc_STRVAR(vampy_doc,"This module exposes Vamp plugin data type wrappers.");
-
-static int
-setint(PyObject *d, const char *name, int value)
-{
-	PyObject *v;
-	int err;
-	v = PyInt_FromLong((long)value);
-	err = PyDict_SetItemString(d, name, v);
-	Py_XDECREF(v);
-	return err;
-}
+PyDoc_STRVAR(vampy_doc,"This module exposes Vamp plugin data type wrappers.");
 
 static int
 setdbl(PyObject *d, const char *name, double value)
@@ -166,33 +155,23 @@ setdbl(PyObject *d, const char *name, double value)
 	PyObject *v;
 	int err;
 	v = PyFloat_FromDouble(value);
-	err = PyDict_SetItemString(d, name, v);
+	// err = PyDict_SetItemString(d, name, v);
+	err = PyModule_AddObject(d, name, v);
 	Py_XDECREF(v);
 	return err;
 }
 
-static int
-setstr(PyObject *d, const char *name, const char *value)
-{
-	PyObject *v;
-	int err;
-	v = PyStr_FromString(value);
-	err = PyDict_SetItemString(d, name, v);
-	Py_XDECREF(v);
-	return err;
-}
-
-static struct PyModuleDef VampyDef = {
+static struct PyModuleDef vampydef = {
     PyModuleDef_HEAD_INIT,
     "vampy",
-    PyDoc_STR("Vampy : This plugin is a wrapper around the Vamp plugin API. It allows for writing Vamp plugins in Python"),
+    vampy_doc,
     -1,
     VampyMethods
 };
 
 MODULE_INIT_FUNC(vampy)
 {
-	PyObject *module, *mdict;
+	PyObject *module;//, *mdict;
 
 	/* if (PyType_Ready(&Feature_Type) < 0) return;
 	Note: Why do we get a segfault if this is initialised here?
@@ -208,37 +187,41 @@ MODULE_INIT_FUNC(vampy)
 	Py_TYPE(&ParameterDescriptor_Type) = &PyType_Type;
 	initFeatureSetType(); // this is derived from the builtin dict
 
-	PyImport_AddModule("vampy");
-	module = PyModule_Create(&VampyDef);
+	module = PyImport_AddModule(vampydef.m_name);
 	if (!module) goto failure;
-	mdict = PyModule_GetDict(module);
-	if (!mdict) goto failure;
+	// module = PyModule_Create(&vampydef);
+	// if (!module) goto failure;
+	// mdict = PyModule_GetDict(module);
+	// if (!mdict) goto failure;
+	
+	if (PyModule_AddFunctions(module, vampydef.m_methods) < 0) goto failure;
 
 	/// vampy plugin wrapper flags
-	if (setint(mdict, "vf_NULL", vf_NULL) < 0) goto failure;
-	if (setint(mdict, "vf_DEBUG", vf_DEBUG) < 0) goto failure;
-	if (setint(mdict, "vf_STRICT", vf_STRICT) < 0) goto failure;
-	if (setint(mdict, "vf_QUIT", vf_QUIT) < 0) goto failure;
-	if (setint(mdict, "vf_REALTIME", vf_REALTIME) < 0) goto failure;
-	if (setint(mdict, "vf_BUFFER", vf_BUFFER) < 0) goto failure;
-	if (setint(mdict, "vf_ARRAY", vf_ARRAY) < 0) goto failure;
-	if (setint(mdict, "vf_DEFAULT_V2", vf_DEFAULT_V2) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "vf_NULL", vf_NULL) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "vf_DEBUG", vf_DEBUG) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "vf_STRICT", vf_STRICT) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "vf_QUIT", vf_QUIT) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "vf_REALTIME", vf_REALTIME) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "vf_BUFFER", vf_BUFFER) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "vf_ARRAY", vf_ARRAY) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "vf_DEFAULT_V2", vf_DEFAULT_V2) < 0) goto failure;
 	
 	/// Vamp enum types simulation
-	if (setint(mdict, "OneSamplePerStep", Vamp::Plugin::OutputDescriptor::OneSamplePerStep) < 0) goto failure;
-	if (setint(mdict, "FixedSampleRate", Vamp::Plugin::OutputDescriptor::FixedSampleRate) < 0) goto failure;
-	if (setint(mdict, "VariableSampleRate", Vamp::Plugin::OutputDescriptor::VariableSampleRate) < 0) goto failure;
-	if (setint(mdict, "TimeDomain", Vamp::Plugin::TimeDomain) < 0) goto failure;
-	if (setint(mdict, "FrequencyDomain", Vamp::Plugin::FrequencyDomain) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "OneSamplePerStep", Vamp::Plugin::OutputDescriptor::OneSamplePerStep) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "FixedSampleRate", Vamp::Plugin::OutputDescriptor::FixedSampleRate) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "VariableSampleRate", Vamp::Plugin::OutputDescriptor::VariableSampleRate) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "TimeDomain", Vamp::Plugin::TimeDomain) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "FrequencyDomain", Vamp::Plugin::FrequencyDomain) < 0) goto failure;
 
 	/// module attributes
-	if (setstr(mdict, "__name__", "vampy") < 0) goto failure;
-	if (setdbl(mdict, "__version__", 2.0) < 0) goto failure;
-	if (setdbl(mdict, "__VAMP_API_VERSION__", (double) VAMP_API_VERSION) < 0) goto failure;
+	if (PyModule_AddStringConstant(module, "__name__", vampydef.m_name) < 0) goto failure;
+	if (PyModule_AddStringConstant(module, "__doc__", vampydef.m_doc) < 0) goto failure;
+	if (setdbl(module, "__version__", 2.0) < 0) goto failure;
+	if (setdbl(module, "__VAMP_API_VERSION__", (double) VAMP_API_VERSION) < 0) goto failure;
 #ifdef HAVE_NUMPY
-	if (setint(mdict, "__numpy__", 1) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "__numpy__", 1) < 0) goto failure;
 #else
-	if (setint(mdict, "__numpy__", 0) < 0) goto failure;
+	if (PyModule_AddIntConstant(module, "__numpy__", 0) < 0) goto failure;
 #endif
 	
 	/// type objects

@@ -326,7 +326,7 @@ const VampPluginDescriptor
 
 	DSTREAM << "# Vampy version: " << VAMPY_VERSION << endl;
 	
-	int isPythonInitialized = Py_IsInitialized();
+	int isPythonInitialized = 0; //Py_IsInitialized();
 	DSTREAM << "# isPythonInitialized: " << isPythonInitialized << endl;
 	DSTREAM << "# haveScannedPlugins: " << haveScannedPlugins << endl;
 

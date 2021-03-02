@@ -244,8 +244,10 @@ PyExtensionManager::printDict(PyObject* inDict) const
 	cerr << endl << endl << "Module dictionary contents: " << endl;
 	while (PyDict_Next(inDict, &pyPos, &pyKey, &pyDictValue))
 	{ 
-		char *key = PyBytes_AS_STRING(pyKey);
-		char *val = PyBytes_AS_STRING(PyObject_Str(pyDictValue));
+		// char *key = PyBytes_AS_STRING(pyKey);
+		// char *val = PyBytes_AS_STRING(PyObject_Str(pyDictValue));
+		const char *key = PyStr_AsString(pyKey);
+		const char *val = PyStr_AsString(PyObject_Str(pyDictValue));
 		cerr << "key: [ '" << key << "' ] value: " << val << endl;
 	}
 }
