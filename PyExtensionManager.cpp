@@ -60,7 +60,7 @@ PyExtensionManager::initExtension()
 	DSTREAM << "Initialising extension module." << endl; 
 
 	/// call the module initialiser first
-	initvampy();
+	initvampy2();
 
 	/// these references are all borrowed
 	m_pyGlobalNamespace = PyImport_GetModuleDict();

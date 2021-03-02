@@ -340,7 +340,7 @@ const VampPluginDescriptor
 				cerr << "Warning: Extension module could not be added to module inittab." << endl;
 			Py_Initialize();
 			array_API_initialiser();
-			initvampy();
+			initvampy2();
 			DSTREAM << "# isPythonInitialized after initialize: " << Py_IsInitialized() << endl;
 		}
 
