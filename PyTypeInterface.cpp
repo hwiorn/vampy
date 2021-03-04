@@ -10,7 +10,7 @@
 
 */
 
-#include <py3c.h>
+#include <py3c/py3c.h>
 
 #ifdef HAVE_NUMPY
 #define PY_ARRAY_UNIQUE_SYMBOL VAMPY_ARRAY_API

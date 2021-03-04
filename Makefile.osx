@@ -1,10 +1,9 @@
 PY_VERSION ?= 2.7
 
-PYDIR		:= /System/Library/Frameworks/Python.framework/Versions/$(PY_VERSION)
+CXXFLAGS	:= -DHAVE_NUMPY -D_DEBUG -mmacosx-version-min=10.10 -I../vamp-plugin-sdk -O2 -Wall $(shell python$(PY_VERSION)-config --cflags)
+CXXFLAGS    += -I$(shell python$(PY_VERSION)-config --prefix)/lib/python$(PY_VERSION)/site-packages/numpy/core/include -I$(shell python$(PY_VERSION)-config --prefix)/Extras/lib/python/numpy/core/include
 
-CXXFLAGS	:= -DHAVE_NUMPY -D_DEBUG -mmacosx-version-min=10.10 -I../vamp-plugin-sdk -O2 -Wall -I$(PYDIR)/include/python$(PY_VERSION) -I$(PYDIR)/Extras/lib/python/numpy/core/include
-
-LDFLAGS		:= -install_name vampy.dylib -g -exported_symbols_list vamp-plugin.list -mmacosx-version-min=10.10 ../vamp-plugin-sdk/libvamp-sdk.a -dynamiclib -lpython$(PY_VERSION) -lpthread
+LDFLAGS		:= -install_name vampy.dylib -g -exported_symbols_list vamp-plugin.list -mmacosx-version-min=10.10 ../vamp-plugin-sdk/libvamp-sdk.a -dynamiclib $(shell python$(PY_VERSION)-config --ldflags) -lpthread
 
 default: vampy.dylib 
 all: vampy.dylib vampymod.so
@@ -37,7 +36,7 @@ installplug : install
 cleanplug : clean
 
 clean:	
-	rm *.o
-	rm *.a
-	rm *$(PLUGIN_EXT)
+	rm -f *.o
+	rm -f *.a
+	rm -f *$(PLUGIN_EXT)
 	

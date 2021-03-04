@@ -9,7 +9,7 @@
 
 */
 
-#include <py3c.h>
+#include <py3c/py3c.h>
 #include "PyExtensionModule.h"
 #include "PyFeature.h"
 #include "vamp-sdk/Plugin.h"

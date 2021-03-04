@@ -17,7 +17,7 @@ and basic C/C++ types and Vamp API types.
 
 #ifndef _PY_TYPE_INTERFACE_H_
 #define _PY_TYPE_INTERFACE_H_
-#include <py3c.h>
+#include <py3c/py3c.h>
 #ifdef HAVE_NUMPY
 #define PY_ARRAY_UNIQUE_SYMBOL VAMPY_ARRAY_API
 #define NO_IMPORT_ARRAY

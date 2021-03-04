@@ -10,7 +10,7 @@
 
 */
 
-#include <py3c.h>
+#include <py3c/py3c.h>
 #include "vamp/vamp.h"
 #include "PyExtensionModule.h"
 #include "PyExtensionManager.h"

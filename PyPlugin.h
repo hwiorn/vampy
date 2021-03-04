@@ -18,7 +18,7 @@
 #define DEFAULT_RETURN "Method [" << _CLASS_METHOD_ << "] is not implemented. Returning default value."
 #define FLAG_VALUE "Flag: " << flagName << ": " << ((rValue==0)?"False":"True")
 
-#include <py3c.h>
+#include <py3c/py3c.h>
 #include "PyExtensionModule.h"
 #include "PyTypeInterface.h"
 #include "vamp-sdk/Plugin.h"

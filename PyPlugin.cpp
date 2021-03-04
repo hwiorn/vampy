@@ -9,7 +9,7 @@
 
 */
 
-#include <py3c.h>
+#include <py3c/py3c.h>
 #include "PyPlugin.h"
 #include "PyTypeInterface.h"
 #include <stdlib.h>

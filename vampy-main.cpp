@@ -10,7 +10,7 @@
 
 */
 
-#include <py3c.h>
+#include <py3c/py3c.h>
 
 #ifdef HAVE_NUMPY
 
@@ -120,11 +120,13 @@ protected:
 
 #if PY_VERSION_HEX >= 0x03000000
 static void* array_API_initialiser()
+#define NPY_ARRAY_RETVAL NULL
 #else
 static void array_API_initialiser()
+#define NPY_ARRAY_RETVAL
 #endif
 {
-	if (arrayApiInitialised) return NUMPY_IMPORT_ARRAY_RETVAL;
+	if (arrayApiInitialised) return NPY_ARRAY_RETVAL;
 
 /* Numpy 1.3 build note: there seems to be a bug 
 in this version (at least on OS/X) which will cause memory 
@@ -200,7 +202,7 @@ version of Numpy is used when loading the library.
 	else {
 		numpyInstalled = true;
 		arrayApiInitialised = true;
-		return NUMPY_IMPORT_ARRAY_RETVAL;
+		return NPY_ARRAY_RETVAL;
   	}
 
 
@@ -210,7 +212,7 @@ numpyFailure:
 	numpyInstalled = false;
 	arrayApiInitialised = true;
 	if (pyModule) Py_XDECREF(pyModule);
-	return NUMPY_IMPORT_ARRAY_RETVAL;
+	return NPY_ARRAY_RETVAL;
 
 /*HAVE_NUMPY*/
 #else
@@ -219,7 +221,7 @@ numpyFailure:
 
 	numpyInstalled = false;
 	arrayApiInitialised = true;
-	return NUMPY_IMPORT_ARRAY_RETVAL;
+	return NPY_ARRAY_RETVAL;
 }
 
 
