@@ -20,7 +20,7 @@ vampymod.so: PyExtensionModule.o PyRealTime.o PyFeature.o PyParameterDescriptor.
 	g++ $^ -o $@ $(LDFLAGS) 
 
 vampy.so: PyPlugin.o PyPlugScanner.o vampy-main.o Mutex.o PyTypeInterface.o PyExtensionModule.a  PyExtensionManager.o
-	g++ $^ -o $@ $(LDFLAGS) -Wl,--version-script=vamp-plugin.map
+	g++ $^ -o $@ $(LDFLAGS) #-Wl,--version-script=vamp-plugin.map
 
 # Install plugin
 #

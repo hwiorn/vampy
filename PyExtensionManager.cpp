@@ -88,7 +88,17 @@ PyExtensionManager::~PyExtensionManager()
 		DSTREAM << "Vampy::~PyExtensionManager: manager was never initialised, or initialisation did not complete: not attempting cleanup" << endl;
 		return;
 	}
-		
+
+#if IS_PY3
+	/* Note: PyImport_AddModule() and PyImport_GetModule() call PyImport_GetModuleDict() and
+	   then PyThreadState_Get() which issues a fatal error when current thread state is NULL in python 3. */
+	PyObject * cts = PyThreadState_GetDict();
+	if(!cts) {
+		DSTREAM << "No current state is available. it's okay" << endl;
+		// Ensure it's okay because the python interpreter is already exited.
+		return;
+	}
+#endif
 	DSTREAM << "Cleaning locals..." << endl;
 
 	cleanAllLocals(); 
@@ -209,17 +219,6 @@ PyExtensionManager::updateLocalNamespace(const char* plugModuleName) const
 bool 
 PyExtensionManager::cleanModule(void) const
 {
-#if IS_PY3
-	PyObject * cts = PyThreadState_GetDict();
-	if(!cts) {
-		DSTREAM << "No current state is available. it's okay" << endl;
-		// Ensure it's okay because the python interpreter is already exited.
-		return true;
-	}
-#endif
-	
-	/* Note: PyImport_AddModule() and PyImport_GetModule() call PyImport_GetModuleDict() and
-	   then PyThreadState_Get() which issues a fatal error when current thread state is NULL in python 3. */
 	PyObject *m = PyImport_AddModule("vampy");
 	if (!m) {
 		if (PyErr_Occurred()) {PyErr_Print(); PyErr_Clear();}
