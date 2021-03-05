@@ -328,7 +328,7 @@ const VampPluginDescriptor
 
 	DSTREAM << "# Vampy version: " << VAMPY_VERSION << endl;
 	
-	int isPythonInitialized = 0; //Py_IsInitialized();
+	int isPythonInitialized = Py_IsInitialized();
 	DSTREAM << "# isPythonInitialized: " << isPythonInitialized << endl;
 	DSTREAM << "# haveScannedPlugins: " << haveScannedPlugins << endl;
 
@@ -338,7 +338,7 @@ const VampPluginDescriptor
 
 			if (!preloadPython())
 				cerr << "Warning: Could not preload Python. Dynamic loading in scripts will fail." << endl;
-			if (PyImport_AppendInittab("vampy", initvampy) != 0)
+			if (PyImport_AppendInittab("vampy", &initvampy) != 0)
 				cerr << "Warning: Extension module could not be added to module inittab." << endl;
 			Py_Initialize();
 			array_API_initialiser();

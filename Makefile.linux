@@ -1,12 +1,11 @@
 PY_VERSION ?= 2.7
 CXXFLAGS	+= -DHAVE_NUMPY \
-		-D_DEBUG -O0 -g -Wall   -fPIC \
-		-I/usr/include/python$(PY_VERSION) \
-		-I/usr/lib/python$(PY_VERSION)/dist-packages/numpy/core/include \
-		-I/usr/lib/python$(PY_VERSION)/site-packages/numpy/core/include \
+		-D_DEBUG -O0 -g -Wall -Werror -fno-strict-aliasing -fPIC \
+		$(shell python$(PY_VERSION)-config --cflags) \
+		$(shell python$(PY_VERSION)-config --prefix)/lib/python$(PY_VERSION)/site-packages/numpy/core/include \
 		-I../vamp-plugin-sdk
 
-LDFLAGS		+= -shared -Wl,-Bstatic -L../vamp-plugin-sdk -lvamp-sdk -Wl,-Bdynamic -lpython$(PY_VERSION) -lpthread -Wl,--version-script=vamp-plugin.map
+LDFLAGS		+= -shared -Wl,-Bstatic -L../vamp-plugin-sdk -lvamp-sdk -Wl,-Bdynamic $(shell python$(PY_VERSION)-config --ldflags) -lpthread
 
 default: vampy.so 
 all: vampy.so vampymod.so
@@ -19,7 +18,7 @@ vampymod.so: PyExtensionModule.o PyRealTime.o PyFeature.o PyParameterDescriptor.
 	g++ $^ -o $@ $(LDFLAGS) 
 
 vampy.so: PyPlugin.o PyPlugScanner.o vampy-main.o Mutex.o PyTypeInterface.o PyExtensionModule.a  PyExtensionManager.o
-	g++ $^ -o $@ $(LDFLAGS) 
+	g++ $^ -o $@ $(LDFLAGS) -Wl,--version-script=vamp-plugin.map
 
 # Install plugin
 #

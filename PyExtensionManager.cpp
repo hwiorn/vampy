@@ -209,6 +209,17 @@ PyExtensionManager::updateLocalNamespace(const char* plugModuleName) const
 bool 
 PyExtensionManager::cleanModule(void) const
 {
+#if IS_PY3
+	PyObject * cts = PyThreadState_GetDict();
+	if(!cts) {
+		DSTREAM << "No current state is available. it's okay" << endl;
+		// Ensure it's okay because the python interpreter is already exited.
+		return true;
+	}
+#endif
+	
+	/* Note: PyImport_AddModule() and PyImport_GetModule() call PyImport_GetModuleDict() and
+	   then PyThreadState_Get() which issues a fatal error when current thread state is NULL in python 3. */
 	PyObject *m = PyImport_AddModule("vampy");
 	if (!m) {
 		if (PyErr_Occurred()) {PyErr_Print(); PyErr_Clear();}
@@ -243,9 +254,7 @@ PyExtensionManager::printDict(PyObject* inDict) const
 	PyObject *pyKey, *pyDictValue;
 	cerr << endl << endl << "Module dictionary contents: " << endl;
 	while (PyDict_Next(inDict, &pyPos, &pyKey, &pyDictValue))
-	{ 
-		// char *key = PyBytes_AS_STRING(pyKey);
-		// char *val = PyBytes_AS_STRING(PyObject_Str(pyDictValue));
+	{
 		const char *key = PyStr_AsString(pyKey);
 		const char *val = PyStr_AsString(PyObject_Str(pyDictValue));
 		cerr << "key: [ '" << key << "' ] value: " << val << endl;

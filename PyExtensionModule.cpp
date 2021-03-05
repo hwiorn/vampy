@@ -209,7 +209,7 @@ MODULE_INIT_FUNC(vampy)
 	Py_TYPE(&ParameterDescriptor_Type) = &PyType_Type;
 	initFeatureSetType(); // this is derived from the builtin dict
 
-	// PyImport_AddModule(vampydef.m_name);
+	PyImport_AddModule(vampydef.m_name);
 	module = PyModule_Create(&vampydef);
 	if (!module) goto failure;
 	mdict = PyModule_GetDict(module);
@@ -287,7 +287,7 @@ PyMODINIT_FUNC initvampy(void) {
 
 PyMODINIT_FUNC initvampy2(void) {
 #if IS_PY3
-	PyObject *module, *sys_modules;
+	PyObject *module;
 #endif
 	// PyImport_AddModule(vampydef.m_name);
 #if IS_PY3
@@ -295,8 +295,7 @@ PyMODINIT_FUNC initvampy2(void) {
 #endif
 	initvampy();
 #if IS_PY3
-    sys_modules = PyImport_GetModuleDict();
-    PyDict_SetItemString(sys_modules, vampydef.m_name, module);
+    PyDict_SetItemString(PyImport_GetModuleDict(), vampydef.m_name, module);
 	Py_DECREF(module);
 	return module;
 #endif
